@@ -62,13 +62,10 @@ namespace Matrix
         {
             for(int i =0;i < lenght;i++)
             {
-                int _y = drop.Y - i;
-                int scaleRGB = (255 / lenght);
-
-                if ((_y > 0) && (drop.Y < Console.BufferHeight))
+                if ((drop.Y - i > 0) && (drop.Y < Console.BufferHeight))
                 {
                     Console.SetCursorPosition(drop.X, (drop.Y - i));
-                    Console.Write(AVALILABLE_CHARACTERS[rand.Next(AVALILABLE_CHARACTERS.Length)], Color.FromArgb(0, 255 - scaleRGB * i, 0));
+                    Console.Write(AVALILABLE_CHARACTERS[rand.Next(AVALILABLE_CHARACTERS.Length)], Color.FromArgb(0, 255 - (255 / lenght) * i, 0));
                 }
             }
 
