@@ -9,67 +9,81 @@ namespace Matrix
 {
     class Program
     {
-        static string availableCharacters = "@#$%&QWERTYUIOPASDFGHJKLZXCVBNM123456987";
+        // Init
         static Random rand = new Random();
-        static List<Drop> drops = new List<Drop>();
+        static List<Point> drops = new List<Point>();
+
+        // Settings
+        static string AVALILABLE_CHARACTERS = "@#$%&QWERTYUIOPASDFGHJKLZXCVBNM123456987";
+        static int MAX_DROPS_COUNT = 64;
+        static int LOOP_DELAY = 0;
+        static int SPAWN_DELAY = 10; //10ms
+        static int DROP_LENGHT = 16;
+        static int WINDOW_WIDTH = 60;
+        static int WINDOW_HEIGHT = 30;
+
         static void Main(string[] args)
         {
-            SetSize(60, 30);
+            SetSize(WINDOW_WIDTH, WINDOW_HEIGHT);
             Console.CursorVisible = false;
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
+
+            // Main Loop
             while(true)
             {
-                Console.Title = drops.Count.ToString();
-                if(stopwatch.Elapsed.TotalMilliseconds > 10)
+                // Creating new drops
+                if(stopwatch.Elapsed.TotalMilliseconds > SPAWN_DELAY)
                 {
-                    if(drops.Count < 36)
+                    if(drops.Count < MAX_DROPS_COUNT)
                     {
-                        drops.Add(new Drop(Color.Green) { x = rand.Next(Console.BufferWidth) });
-                        
+                        drops.Add(new Point(rand.Next(Console.BufferWidth), 0));
                     }
                     stopwatch.Restart();
                 }
 
+                // Drawing
                 for(int i =0;i< drops.ToArray().Length;i++)
                 {
-                    drops[i].y += 1;
-                    Draw(drops[i], 16);
+                    drops[i] = new Point(drops[i].X, drops[i].Y + 1);
+                    Draw(drops[i], DROP_LENGHT);
 
-                    if (drops[i].y > Console.BufferHeight + 16)
+                    if (drops[i].Y > Console.BufferHeight + DROP_LENGHT)
                     {
                         drops.RemoveAt(i);
                     }
                 }
+                Thread.Sleep(LOOP_DELAY);
             }
         }
 
-        static void Draw(Drop drop,int lenght)
+        // Draw single drop
+        static void Draw(Point drop,int lenght)
         {
             for(int i =0;i < lenght;i++)
             {
-                int _y = drop.y - i;
+                int _y = drop.Y - i;
                 int scaleRGB = (255 / lenght);
 
-                if ((_y > 0) && (drop.y < Console.BufferHeight))
+                if ((_y > 0) && (drop.Y < Console.BufferHeight))
                 {
-                    Console.SetCursorPosition(drop.x, (drop.y - i));
-                    Console.Write(availableCharacters[rand.Next(availableCharacters.Length)], Color.FromArgb(0, 255 - scaleRGB * i, 0));
+                    Console.SetCursorPosition(drop.X, (drop.Y - i));
+                    Console.Write(AVALILABLE_CHARACTERS[rand.Next(AVALILABLE_CHARACTERS.Length)], Color.FromArgb(0, 255 - scaleRGB * i, 0));
                 }
             }
 
-            int __y = drop.y - lenght;
-            if ((__y > 0) )
+            if (drop.Y - lenght > 0)
             {
                 try
                 {
-                    Console.SetCursorPosition(drop.x, drop.y - lenght);
+                    Console.SetCursorPosition(drop.X, drop.Y - lenght);
                     Console.Write(' ');
                 }
                 catch{ } 
             } 
         }
 
+        // Set window size
         static void SetSize(int width,int height)
         {
             Console.SetWindowSize(width, height);
